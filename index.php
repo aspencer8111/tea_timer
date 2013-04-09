@@ -50,17 +50,20 @@
       [4, 7, null]];
 
     function on_load(){
-      if(getCookie("tea")!= null){
-        document.getElementById("tea").selectedIndex = getCookie("tea");
-      }
-      if(getCookie("steeping")!= null){
-        document.getElementById("steeping").selectedIndex = getCookie("steeping");
+      for(var x=1;x<=4;x++){
+        if(getCookie(sprintf("tea%d",x))!= null){
+          //alert(sprintf("tea%d",x));
+          document.getElementById(sprintf("tea%d",x)).selectedIndex = getCookie(sprintf("tea%d",x));
+        }
+        if(getCookie(sprintf("steeping%d",x))!= null){
+          document.getElementById(sprintf("steeping%d",x)).selectedIndex = getCookie(sprintf("steeping%d",x));
+        }
       }
     }
 
-    function Decrement() {
+    function Decrement(num) {
       //alert(sprintf("%01d : %02d", getminutes(), getseconds()));
-      div = document.all.time
+      div = document.getElementById(sprintf("time%d", num));
       if (document.getElementById) {
         div.innerText = sprintf("%01d : %02d", getminutes(), getseconds());
         if(secs == 0){
@@ -69,7 +72,7 @@
           div.style.color = "#ff0000";
         }else{
           secs--;
-          timer = setTimeout('Decrement()',1000);
+          timer = setTimeout(sprintf('Decrement(%d)', num), 1000);
         }
       }
     }
@@ -106,25 +109,30 @@
       }
      }
 
-    function countdown() {
-      clear_all();
-      tea = document.getElementById("tea");
-      steeping = document.getElementById("steeping");
-      setCookie("tea", tea.selectedIndex, 30);
-      setCookie("steeping", steeping.selectedIndex, 30);
+    function countdown(num) {
+      clear_all(num);
+      tea = document.getElementById(sprintf("tea%d", num));
+      steeping = document.getElementById(sprintf("steeping%d", num));
+      setCookie(sprintf("tea%d", num), tea.selectedIndex, 30);
+      setCookie(sprintf("steeping%d", num), steeping.selectedIndex, 30);
       mins = time_array[tea.selectedIndex-1][steeping.selectedIndex-1]
       secs = mins * 60;
-      timer = setTimeout('Decrement()',1000);
+      timer = setTimeout(sprintf('Decrement(%d)', num),1000);
     }
 
-    function clear_all() {
-      document.all.time.style.color = "#999999";
+    function clear_all(num) {
+      time = document.getElementById(sprintf("time%d", num));
+      time.style.color = "#999999";
       clearTimeout(timer);
-      document.all.time.innerText = "0 : 00";
+      time.innerText = "0 : 00";
     }
     </script>
   </head>
   <body onload="on_load()">
+    <div class="form-horizontal custom_body">
+      <a style="margin-right: 10px;" class="pull-left btn btn-small btn-inverse" href="http://www.thesocietea.org/tea/">Back<i class="icon-white"></i></a>
+    </div>
+    <br />
     <header class="jumbotron">
       <h1 style="text-align: center; text-style: italic">Tea Timers</h1>
       <span class="" style="text-align: center;"> 
@@ -133,11 +141,24 @@
         <a href="mailto:info@thesocietea.org">info@thesocietea.org</a><br />
         </address>
       </span>
+<?php
+  display_divs(1);
+  display_divs(2);
+  display_divs(3);
+  display_divs(4);
+?>
     </header>
-      <div class="custom_body">
+  </body>
+</html>
+
+<?php
+
+function display_divs($num){
+  echo '
+      <div class="custom_body_timer' . $num . '">
         <form>
           <div class="controls controls-row">
-            <select id="tea">
+            <select id="tea' . $num . '">
               <option>Tea</option>
               <option>White</option>
               <option>Green</option>
@@ -149,19 +170,18 @@
               <option>Mate</option>
               <option>Herbal</option>
             </select>
-            <select id="steeping">
+            <select id="steeping' . $num . '">
               <option>Steeping</option>
               <option>First</option>
               <option>Second</option>
               <option>Third</option>
             </select>
           </div>
-          <button type="button" class="btn btn-warning" onclick="countdown()">Start</button>
-          <button type="button" class="btn btn-warning" onclick="clear_all()">Clear</button>
+          <button type="button" class="btn btn-warning" onclick="countdown(' . $num . ')">Start</button>
+          <button type="button" class="btn btn-warning" onclick="clear_all(' . $num . ')">Clear</button>
         </form>
-      </div>
-      <div id="timer" class="custom_body">
-        <div id="time" class="timer_class">0 : 00</div>
-      </div>
-  </body>
-</html>
+        <div id="time' . $num . '" class="timer_class">0 : 00</div>
+      </div>';
+}
+
+?>
