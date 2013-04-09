@@ -36,10 +36,7 @@
     //var secs = mins * 60;
     var timer;
     var sound = new Howl({
-      urls: ['sounds.mp3', 'sounds.ogg'],
-      sprites: {
-        blast: [0, 2000]
-      }
+      urls: ['assets/bell.mp3'],
     });
     var time_array = [
       [.1, 2.5, 3],
@@ -68,7 +65,7 @@
         div.innerText = sprintf("%01d : %02d", getminutes(), getseconds());
         if(secs == 0){
           clearTimeout(timer);
-          sound.play('blast');
+          sound.play();
           div.style.color = "#ff0000";
         }else{
           secs--;
